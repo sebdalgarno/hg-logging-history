@@ -2,6 +2,8 @@ source('header.R')
 
 set_sub("get")
 
+load_datas()
+
 # transform all to utm zone 8
 list <- gsub(".rds", "", list.files(path = 'output/data/get/')) 
 
@@ -31,8 +33,10 @@ rsltinv %<>% select(CoverID = FOREST_COVER_ID, OpeningID = OPENING_ID, AreaSqm =
 
 rsltres %<>% select(FileID = FOREST_FILE_ID, PermitID = CUTTING_PERMIT_ID, BlockID = CUT_BLOCK_ID, 
                     OpeningID = OPENING_ID, AreaHa = SILV_POLYGON_AREA)
+
+rsltopen14 %<>% select(YearHarv = END_YR)
   
-log04 %<>% select(AreaHa = AREA, PerimeterM = PERIMETER, Year = YEAR)
+log04 %<>% select(AreaHa = AREA, PerimeterM = PERIMETER, YearHarv = YEAR)
 
 road04 %<>% select(Year = YEAR, Length = LENGTH)
 
@@ -51,6 +55,8 @@ log04 %<>% mutate(AreaU = st_area(.),
 
 road04 %<>% mutate(LengthU = st_length(.))
 
+rsltopen14 %<>% mutate(AreaU = st_area(.))
+
 # DateTime
 vriage %<>% mutate(DateHarv = lubridate::ymd(DateHarv, tz = tz_analysis)) %>%
   mutate(YearHarv = as.integer(lubridate::year(DateHarv)))
@@ -63,12 +69,14 @@ concut %<>% mutate(DistStart = lubridate::ymd_hms(DistStart, tz = tz_analysis),
 
 # unique IDs
 log04 %<>% mutate(Log04ID = 1:n())
+rsltopen14 %<>% mutate(newopenID = 1:n())
 
 # write transformed .shps
 write_shp(concut, layer = "Consolidated-Cut-Blocks-UTM8-2017")
 write_shp(vriage, layer = "VRI-AgeFields-UTM8-2017")
 write_shp(rsltinv, layer = "RESULTS-Inventory-UTM8-2017")
 write_shp(rsltres, layer = "RESULTS-Reserve-UTM8-2017")
+write_shp(rsltopen14, layer = "RESULTS-Openings-UTM8-2014on")
 write_shp(roads, layer = "Roads-UTM8-2017")
 write_shp(log04, layer = "Log04-UTM8-2017")
 write_shp(road04, layer = "Roads04-UTM8-2017")

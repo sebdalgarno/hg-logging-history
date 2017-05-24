@@ -6,6 +6,16 @@ load_datas()
 # load clipped vri (qgis output)
 inter <- st_read(layer = "log04-vri-intersect", dsn = "input/data/new/output/shps")
 
+tmp <- inter[1,]
+scale <- data.frame(st_coordinates(tmp))
+xmin = min(scale$X)
+xmax = max(scale$X)
+ymin = min(scale$Y)
+ymax = max(scale$Y)
+
+ggplot(tmp) + geom_sf(data = tmp) + scalebar(data = NULL, location = "bottomright", dist = 0.05, 
+                                             x.min = xmin, x.max = xmax, y.min = ymin, y.max = ymax)
+
 # area of intersected polys
 inter %<>% st_cast("POLYGON")
 inter %<>% mutate(VriAreaU = st_area(.))

@@ -13,7 +13,12 @@ vriage <- st_read('input/data/VRI_HG_age_fields_only/VRI2015_HG_AgeFields_Only.s
 concut <- st_read('input/data/new/raw/VEG_CONSOLIDATED_CUT_BLOCKS_SP.geojson')
 rsltinv <- st_read('input/data/new/raw/RSLT_FOREST_COVER_INV_SVW.geojson')
 rsltres <- st_read('input/data/new/raw/RSLT_FOREST_COVER_RESERVE_SVW.geojson')
+rsltopen14 <- st_read('input/data/new/raw/result_openings_no_reserves_2014-2017.shp')
+#rsltopen <- st_read('input/data/new/raw/result_openings_no_reserves_2014-2017.shp')
 roads <- st_read('input/data/new/raw/FTEN_ROAD_SECTION_LINES_SVW.geojson')
+
+# rsltopen14 missing crs
+st_crs(rsltopen14) <- 3005
 
 save_datas()
 
