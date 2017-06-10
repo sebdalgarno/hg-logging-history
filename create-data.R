@@ -76,17 +76,16 @@ log17com %<>% mutate(ID = 1:n())
 # create a shape > 1976 or digitised
 harvsg <- filter(log17com, YearHarv >= 1977 | Source == "log17")
 
-write_shp(log17com, layer = 'log17-YearHarvest-UTM8')
+write_shp(log17com, layer = 'log17-YearHarvest-UTM8', path = path.expand("input/data/new/output/shps"))
 write_shp(harvsg, layer = 'YearHarvest-SecondGrowth-UTM8')
 
 ## filter polys that intersect
-# fix invalid geometries
+# check and fix (qgis) invalid geometries
 log17false <- log17com[!st_is_valid(log17com),]
 
-# read back in fixed polys
-log17fix <- st_read('input/data/new/clean/log17-YearHarvest-Valid-UTM8.shp')
 
-log17false <- log17fix[!st_is_valid(log17fix),]
+
+
 
 
 
