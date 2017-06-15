@@ -5,7 +5,8 @@ ggsf <- function(data) {
 
 # quick leaflets
 leaf <- function(data) {
-  leaflet() %>% addPolygons(as(data, "Spatial"))
+  data %<>% as("Spatial")
+  leaflet() %>% addPolygons(data)
 }
 
 # transform all to epsg
