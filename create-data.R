@@ -98,18 +98,5 @@ save_data(log17inter)
 
 write_shp(log17inter, layer = 'log17-onlyOverlap-intersection', path = path.expand("input/data/new/output/shps"))
 
-# read cleaned shape, fix fields and wirte as two .shps
-log17cl <- st_read('input/data/new/output/shps/log17-YearHarvest-Cleaned-UTM8.shp')
-
-log17cl %<>% mutate(SecondGrow = ifelse(is.na(SecondGrow), 0, SecondGrow))
-
-
-log17og <- filter(log17cl, SecondGrow != 1) %>% select(-SecondGrow)
-log17sg <- filter(log17cl, SecondGrow == 1) %>% select(-SecondGrow)
-
-write_shp(log17og, layer = 'log17-YearHarvest-OG-UTM8', path = path.expand("input/data/new/output/shps"))
-write_shp(log17sg, layer = 'log17-YearHarvest-SG-UTM8', path = path.expand("input/data/new/output/shps"))
-write_shp(log17cl, layer = 'log17-YearHarvest-ALL-UTM8', path = path.expand("input/data/new/output/shps"))
-
 
 
