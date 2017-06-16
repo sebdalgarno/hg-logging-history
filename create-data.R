@@ -109,6 +109,7 @@ log17sg <- filter(log17cl, SecondGrow == 1) %>% select(-SecondGrow)
 
 write_shp(log17og, layer = 'log17-YearHarvest-OG-UTM8', path = path.expand("input/data/new/output/shps"))
 write_shp(log17sg, layer = 'log17-YearHarvest-SG-UTM8', path = path.expand("input/data/new/output/shps"))
+write_shp(log17cl, layer = 'log17-YearHarvest-ALL-UTM8', path = path.expand("input/data/new/output/shps"))
 
 
 
