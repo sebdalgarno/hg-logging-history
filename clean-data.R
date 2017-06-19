@@ -62,7 +62,8 @@ vriage %<>% mutate(DateHarv = lubridate::ymd(DateHarv, tz = tz_analysis)) %>%
   mutate(YearHarv = as.integer(lubridate::year(DateHarv)))
 
 roads %<>% mutate(DateAward = lubridate::ymd_hms(DateAward, tz = tz_analysis),
-                  DateRetire = lubridate::ymd_hms(DateRetire, tz = tz_analysis))
+                  DateRetire = lubridate::ymd_hms(DateRetire, tz = tz_analysis),
+                  Year = lubridate::year(DateAward))
 
 concut %<>% mutate(DistStart = lubridate::ymd_hms(DistStart, tz = tz_analysis),
                    DistEnd = lubridate::ymd_hms(DistEnd, tz = tz_analysis))
