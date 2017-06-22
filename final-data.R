@@ -23,7 +23,7 @@ roads <- rbind(
                prep(road04, source = "log04"),
                prep(digiroad, source = "log17"))
 
-write_shp(roads, "roads-Combined-UTM8", path = path.expand("input/data/new/output/shps/"))
+write_shp(roads, "log17-Roads-All-UTM8", path = path.expand("input/data/new/output/shps/"))
 
 ### polygons
 # read cleaned shape, fix fields and wirte as two .shps
@@ -32,41 +32,38 @@ st_crs(log17cl) <- "+proj=utm +zone=8 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units
 
 log17cl %<>% mutate(SecondGrow = ifelse(is.na(SecondGrow), 0, SecondGrow))
 
-# filter by year and intersect with roads
-year <- 2007
-data <- log17cl
-
-dat <- filter(data, YearHarv %in% year) %>%
-  filter(is.na(Roadless))
-din <- dat[roads,] 
-dout <- filter(dat, !(dat$ID %in% din$ID))
-dpre <- filter(data, YearHarv < year)
-dtou <-dout[st_buffer(dpre, 1),]
-dtouch <- filter(dout, !(dout$ID %in% dtou$ID))
-dpreand <- filter(data, YearHarv <= year)
-write_shp(dtouch, layer = paste0(year, "-roadless-polys"), path = path.expand("input/data/new/output/shps/"))
-write_shp(dpreand, layer = paste0(year, "pre-log17"), path = path.expand("input/data/new/output/shps/"))
-
-
 # for checking
-write_shp(filter(log17cl, YearHarv < 2006), layer = "2005pre-log17", path = path.expand("input/data/new/output/shps/"))
-
 log17all <- log17cl %>% mutate(SG = SecondGrow) %>%
   select(-SecondGrow, -ID) %>%
   mutate(ID = 1:n()) %>%
-  mutate(DigiSource = Source,
-         DateSource = ifelse(is.na(YearSource), "DATA", 
-                             ifelse(YearSource == "man", "GTL", 
-                                    ifelse(YearSource == "ccb", "CCB", YearSource)))) %>%
+  mutate(PolySource = Source,
+         DateSource = ifelse(is.na(YearSource), "data", 
+                             ifelse(YearSource == "man", "gtl", 
+                                    ifelse(YearSource == "ccb", "ccb", YearSource)))) %>%
   select(-YearSource, -Source) %>%
-  select(ID, YearHarv, SG, DateSource, DigiSource)
+  select(ID, YearHarv, SG, DateSource, PolySource)
 
 log17og <- filter(log17all, SG != 1) %>% select(-SG)
 log17sg <- filter(log17all, SG == 1) %>% select(-SG)
 
-write_shp(log17og, layer = 'log17-YearHarvest-OG-UTM8', path = path.expand("input/data/new/output/shps"))
-write_shp(log17sg, layer = 'log17-YearHarvest-SG-UTM8', path = path.expand("input/data/new/output/shps"))
-write_shp(log17all, layer = 'log17-YearHarvest-ALL-UTM8', path = path.expand("input/data/new/output/shps"))
+write_shp(log17og, layer = 'log17-YearHarvest-OG-UTM8', path = path.expand("input/data/new/output/shps/"))
+write_shp(log17sg, layer = 'log17-YearHarvest-SG-UTM8', path = path.expand("input/data/new/output/shps/"))
+write_shp(log17all, layer = 'log17-YearHarvest-ALL-UTM8', path = path.expand("input/data/new/output/shps/"))
+
+# filter by year and intersect with roads
+year <- 2016
+data <- log17sg
+
+dat <- filter(data, YearHarv %in% year) 
+  # filter(is.na(Roadless))
+din <- dat[roads,]
+dout <- filter(dat, !(dat$ID %in% din$ID))
+dpre <- filter(data, YearHarv < year)
+dtou <-dout[st_buffer(dpre, 1),]
+dtouch <- filter(dout, !(dout$ID %in% dtou$ID))
+dpreand <- filter(log17cl, YearHarv > 2003 & YearHarv <= year)
+write_shp(dtouch, layer = paste0("sg", year, "-roadless-polys"), path = path.expand("input/data/new/output/shps/"))
+write_shp(dpreand, layer = paste0("sg", year, "pre-log17"), path = path.expand("input/data/new/output/shps/"))
 
 ### roads
 
