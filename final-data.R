@@ -8,6 +8,7 @@ digiroad <- st_read('input/data/new/output/shps/Digitised-Road-0619-UTM8.shp')
 st_crs(road) <- "+proj=utm +zone=8 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 st_crs(road04) <- "+proj=utm +zone=8 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 
+set_sub("final")
 road %<>% mutate(ID = 1:n())
 roadin <- road[st_buffer(road04, 25),]
 roadout <- filter(road, !(road$ID %in% roadin$ID))
@@ -65,5 +66,6 @@ dpreand <- filter(log17cl, YearHarv > 2003 & YearHarv <= year)
 write_shp(dtouch, layer = paste0("sg", year, "-roadless-polys"), path = path.expand("input/data/new/output/shps/"))
 write_shp(dpreand, layer = paste0("sg", year, "pre-log17"), path = path.expand("input/data/new/output/shps/"))
 
-### roads
+save_data(log17all, "log17Poly")
+save_data(roads, "log17Road")
 
