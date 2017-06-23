@@ -68,8 +68,8 @@ get_color <- function(data) {
   }
   if(inherits(data, 'Spatial')) {
     red <- proportion_range(data@data$EastingCentroid)
-    blue <- proportion_range(data@data$NorthingCentroid)
-    data@data$ColorCode <- grDevices::rgb(red = red, blue = blue, green = 0.5)
+    yellow <- proportion_range(data@data$NorthingCentroid)
+    data@data$ColorCode <- grDevices::rgb(red = red, yellow = yellow)
     data
   }
   
