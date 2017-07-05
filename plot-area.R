@@ -16,9 +16,11 @@ comb <- rbind(select(poly, Year, ID, Type), select(road15, Year, ID, Type))
 
 set_sub("logarea")
 
-get_color <- colorRampPalette(c("#ff8d00", "#ffff97"))
+pals <- c(rgb(227, 94, 0, maxColorValue = 255), rgb(255, 255, 0, maxColorValue = 255))
 
-labs <- c(1901, 2016)
+get_color <- colorRampPalette(pals)
+
+labs <- c(1900, 2016)
 
 comb %<>% mutate(Year = replace(Year, Year == 2017, NA),
                  Year = replace(Year, Year == 88, 1988)) %>%
@@ -45,7 +47,7 @@ write_csv(combcsv, 'input/data/new/output/csv/log17-area-summary.csv')
 
 logplot <- function(data = comb, n = i) {
   data %<>% mutate(Point = ifelse(Year == n, n, NA),
-                   lovals = predict(loess(SumAreaHa ~ Year,.)))
+                   lovals = predict(lm(SumAreaHa ~ poly(Year, 6),.)))
   val <- filter(data, Year == n)
   value <- val$lovals
   
@@ -61,22 +63,24 @@ logplot <- function(data = comb, n = i) {
     labs(x = "", y = "") + 
     theme(panel.background = element_rect(fill='black', colour='black'),
           panel.grid = element_blank()) +
-    geom_smooth(aes(x = Year, y = SumAreaHa), method = "loess", 
+    geom_smooth(aes(x = Year, y = SumAreaHa), method = "lm", formula = y ~ poly(x, 6),  
                 se = F, colour = "red") +
-    theme(axis.text.x = element_text(size = 25, color = c("#ff8d00",  "#ffff97")), 
-          axis.ticks.x = element_blank(),
-          axis.text.y = element_text(size = 15, color = "grey",
-                                     hjust = -0.1)) +
+    theme(axis.text = element_blank(), 
+          axis.ticks = element_blank(),
+          plot.background = element_rect(fill = "transparent",colour = NA)) +
     geom_point(data = data, aes(Point, lovals), color = "white", 
                fill = "white", size = 2, pch = 21) + 
     geom_hline(yintercept = value, color = "white", size = 0.25) + 
     geom_vline(xintercept = n, color = "white", size = 0.25) 
   
-  save_plot(paste0(n, "-area-logged-roads"), plot = p, width = 6, height = 4, csv = F)
-   p 
+  ggsave(paste0(i, ".png"), bg = "transparent", width = 6, 
+         height = 3.5, dpi = 300, path = "input/data/output/plots/Poly6/")
+  
+  # save_plot(paste0(n, "-area-logged-6"), plot = p, width = 6, height = 4, csv = F)
+  #  p 
 }
 
-for (i in 2006) {
+for (i in 1901:2016) {
   logplot(n = i)
 }
 
