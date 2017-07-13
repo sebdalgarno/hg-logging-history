@@ -45,6 +45,12 @@ st_geometry(combcsv) <- NULL
 
 write_csv(combcsv, 'input/data/new/output/csv/log17-area-summary.csv')
 
+newha <- read_csv('input/movie_drafts/updated_movie_hectares_070817.csv')
+newha %<>% select(Year = `First Harvest Year`, SumAreaHa = Total)
+newha %<>% mutate(Year = replace(Year, Year == 2017, NA)) %>%
+  filter(!is.na(Year))
+newha %<>% mutate(Color = get_color(116))
+
 logplot <- function(data = comb, n = i) {
   data %<>% mutate(Point = ifelse(Year == n, n, NA),
                    lovals = predict(lm(SumAreaHa ~ poly(Year, 6),.)))
@@ -74,14 +80,14 @@ logplot <- function(data = comb, n = i) {
     geom_vline(xintercept = n, color = "white", size = 0.25) 
   
   ggsave(paste0(i, ".png"), bg = "transparent", width = 6, 
-         height = 3.5, dpi = 300, path = "input/data/output/plots/Poly6/")
+         height = 3.5, dpi = 300, path = "input/data/output/plots/new-Poly6")
   
   # save_plot(paste0(n, "-area-logged-6"), plot = p, width = 6, height = 4, csv = F)
   #  p 
 }
 
 for (i in 1901:2016) {
-  logplot(n = i)
+  logplot(data = newha, n = i)
 }
 
 
